@@ -35,3 +35,19 @@ def discover_lan_ips() -> list[str]:
     except OSError:
         pass
     return sorted((ip for ip in values if is_usable_private_ip(ip)), key=lambda ip: tuple(map(int, ip.split("."))))
+
+
+def is_permitted_remote(value: str) -> bool:
+    """Only local loopback and RFC1918 peers should reach the alpha host."""
+    try:
+        ip = ipaddress.ip_address(value)
+    except ValueError:
+        return False
+    return bool(ip.is_loopback or is_usable_private_ip(value))
+
+
+def bind_addresses(private_ips: list[str]) -> list[str]:
+    """Bind only to local private addresses instead of every public interface."""
+    return ["127.0.0.1", *sorted(set(
+        value for value in private_ips if is_usable_private_ip(value)
+    ))]
