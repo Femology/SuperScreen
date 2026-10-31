@@ -41,7 +41,12 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         window.statusBarColor = backdropColor
         window.navigationBarColor = backdropColor
-        showHome()
+        val remembered = prefs.getString("host", null)
+        if (remembered != null && validPrivateIPv4(remembered)) {
+            showViewer(remembered) // One-tap launch after initial trusted pairing
+        } else {
+            showHome()
+        }
     }
 
     private fun text(value: String, size: Float, color: Int, bold: Boolean = false) =
