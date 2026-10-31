@@ -15,9 +15,15 @@ Android phone hotspot ── local Wi-Fi ── Windows 10/11 laptop
 
 **The phone that runs the hotspot is also the receiver.** No internet data is needed for local screen traffic. Windows must connect to the phone's saved Wi-Fi network; third-party Android apps cannot reliably turn on the system hotspot without user action.
 
+### Preview downloads
+
+When the build-and-release workflow succeeds on `main`, unsigned Windows and debug-signed Android preview packages are published together under [SuperScreen preview releases](https://github.com/Femology/SuperScreen/releases/tag/v0.1.0-preview.1) with SHA-256 checksums. **This is a prerelease, not a production build.** Keep the LG TV or another external screen available until the phone connection passes your hardware checks.
+
 ### Run the prototype on Windows
 
-Prerequisites: Windows 10/11, Python 3.11+, Android phone with hotspot, and temporary access to a working Windows display for setup.
+Prerequisites: Windows 10/11, Python 3.11+ (or the portable Windows EXE), Android phone with hotspot, and temporary access to a working Windows display for setup.
+
+**First turn on the Android phone's own hotspot, and join it from the Windows laptop before starting the host.** The Windows server intentionally binds only to private local addresses detected at launch. If the hotspot network changes IP addresses, restart the host.
 
 1. Clone this repository, open PowerShell in the project root, then run **either** `./scripts/run-windows.ps1` for one-command setup **or** the following manual steps:
 
@@ -28,10 +34,9 @@ Prerequisites: Windows 10/11, Python 3.11+, Android phone with hotspot, and temp
    python -m superscreen
    ```
 
-2. Enable your **phone's own hotspot**; connect the Windows laptop to it.
-3. In the PowerShell output, note the local URL and six-digit pairing code. Open the URL **on that same phone**, using Chrome or another modern browser.
-4. Enter the six-digit code. The receiver starts displaying the captured Windows screen.
-5. Keep the Windows terminal running. After a temporary network interruption, the browser tries to reconnect. A paired token is remembered locally on the phone.
+2. In the PowerShell output, note the local URL and six-digit pairing code. Open the URL **on that same phone**, using Chrome or another modern browser (or use the experimental Android APK).
+3. Enter the six-digit code. The receiver starts displaying the captured Windows screen.
+4. Keep the Windows terminal running. After a temporary network interruption, the browser tries to reconnect. A paired token is remembered locally on the phone.
 
 If PowerShell blocks activation, use `\.venv\Scripts\python.exe -m superscreen` instead.
 
@@ -41,7 +46,7 @@ If PowerShell blocks activation, use `\.venv\Scripts\python.exe -m superscreen` 
 
 The experimental [Android Kotlin launcher](android/README.md) embeds the browser receiver, remembers the laptop's local IP address, and opens wireless settings for hotspot setup. It does **not** decode native H.264 or activate the phone's hotspot automatically. Open `android/` in Android Studio to build it.
 
-CI also attempts to produce a **portable Windows host executable** and an **Android debug APK** as workflow artifacts. They are experimental and unsigned, not official releases. Download them only from this repository's own [GitHub Actions runs](https://github.com/Femology/SuperScreen/actions) after checking the jobs have passed.
+GitHub Actions builds both packages and, on a passing `main` release workflow, publishes them to the versioned preview release with checksums. These are experimental builds, not signed production installers; Windows SmartScreen or Android may show installation warnings. Do not disable security protections globally to install them.
 
 If manual Windows mirroring works and you want the Windows host to open after sign-in, run `./scripts/enable-autostart.ps1`. This is opt-in and can be undone with `./scripts/enable-autostart.ps1 -Remove`. It does **not** start at the Windows login screen or automatically join a hotspot that has never been saved.
 
@@ -55,7 +60,7 @@ python -m pytest -q
 
 | Phase | Deliverable | Status |
 |---|---|---|
-| 0 | Repo, protocol notes, test automation, honest scope | In progress |
+| 0 | Repo, protocol notes, test automation, honest scope | Complete |
 | 1 | Trusted-hotspot pairing, browser receiver, mirror | Prototype |
 | 2 | Stable capture/encode, performance telemetry | Planned |
 | 3 | Native Android client, LAN discovery, remembered pairing | Planned |
@@ -64,7 +69,7 @@ python -m pytest -q
 | 6 | USB transport, packaging, accessibility, polish | Planned |
 | 7 | Security hardening, stress tests, signed installers | Planned |
 
-See [Architecture](docs/ARCHITECTURE.md), [Roadmap](docs/ROADMAP.md), [Security](docs/SECURITY.md), [Test plan](docs/TEST-PLAN.md), and [Upstream licence study](docs/UPSTREAM.md).
+See [Windows phone-hotspot setup](docs/SETUP-WINDOWS.md), [Virtual display research](docs/VIRTUAL-DISPLAY.md), [Architecture](docs/ARCHITECTURE.md), [Roadmap](docs/ROADMAP.md), [Security](docs/SECURITY.md), [Test plan](docs/TEST-PLAN.md), and [Upstream licence study](docs/UPSTREAM.md).
 
 ## Important engineering distinction
 
