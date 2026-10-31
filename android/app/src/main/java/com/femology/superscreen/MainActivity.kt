@@ -26,10 +26,10 @@ import android.widget.TextView
 class MainActivity : Activity() {
     private var viewer: WebView? = null
     private val prefs by lazy { getSharedPreferences("superscreen", MODE_PRIVATE) }
-    private val backdropColor = Color.rgb(9, 11, 17)
-    private val inkColor = Color.rgb(244, 247, 255)
-    private val muted = Color.rgb(154, 169, 191)
-    private val accent = Color.rgb(145, 136, 255)
+    private val backdropColor = Color.rgb(8, 9, 10)
+    private val inkColor = Color.rgb(239, 238, 231)
+    private val muted = Color.rgb(161, 166, 159)
+    private val accent = Color.rgb(227, 250, 97)
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
     private fun rounded(color: Int): GradientDrawable = GradientDrawable().apply {
@@ -62,7 +62,7 @@ class MainActivity : Activity() {
             text = title
             isAllCaps = false
             setTextColor(if (highlight) Color.BLACK else inkColor)
-            background = rounded(if (highlight) accent else Color.rgb(30, 36, 49))
+            background = rounded(if (highlight) accent else Color.rgb(28, 30, 29))
             setOnClickListener { click() }
         }
         root.addView(button, LinearLayout.LayoutParams(-1, dp(52)).apply { topMargin = dp(12) })
@@ -77,15 +77,15 @@ class MainActivity : Activity() {
             setBackgroundColor(backdropColor)
         }
         setContentView(ScrollView(this).apply { addView(root) })
-        root.addView(text("▣  SUPERSCREEN", 16f, accent, true))
-        root.addView(text("One computer.\nEvery screen.", 33f, inkColor, true).apply {
+        root.addView(text("▣   SUPER/SCREEN", 15f, accent, true))
+        root.addView(text("Windows.\nOn your phone.", 33f, inkColor, true).apply {
             setPadding(0, dp(35), 0, dp(20))
         })
         root.addView(text(
-            "Use your phone's own hotspot, connect Windows to it, then view your Windows screen directly on this phone. No router or second phone.",
+            "Your phone can run the hotspot and receive the Windows display. No router, second phone, or cloud server.",
             15f, muted
         ))
-        root.addView(text("WINDOWS HOST IPv4 ADDRESS", 12f, accent, true).apply {
+        root.addView(text("01 / WINDOWS HOST ADDRESS", 12f, accent, true).apply {
             setPadding(0, dp(36), 0, dp(9))
         })
         val address = EditText(this).apply {
@@ -94,12 +94,12 @@ class MainActivity : Activity() {
             setTextColor(inkColor)
             setHintTextColor(muted)
             inputType = android.text.InputType.TYPE_CLASS_TEXT
-            background = rounded(Color.rgb(23, 29, 42))
+            background = rounded(Color.rgb(22, 24, 23))
             setPadding(dp(16), dp(12), dp(16), dp(12))
             setText(prefs.getString("host", ""))
         }
         root.addView(address, LinearLayout.LayoutParams(-1, dp(54)))
-        addButton(root, "CONNECT TO WINDOWS →", true) {
+        addButton(root, "CONNECT TO WINDOWS  ↗", true) {
             val value = address.text.toString().trim()
             if (!validPrivateIPv4(value)) {
                 address.error = "Enter a private IPv4 address from Windows PowerShell"
@@ -108,7 +108,7 @@ class MainActivity : Activity() {
                 showViewer(value)
             }
         }
-        addButton(root, "OPEN PHONE NETWORK SETTINGS", false) {
+        addButton(root, "OPEN HOTSPOT SETTINGS", false) {
             startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
         }
         root.addView(text(
@@ -116,7 +116,7 @@ class MainActivity : Activity() {
             13f, muted
         ).apply { setPadding(0, dp(30), 0, 0) })
         root.addView(text(
-            "ALPHA SECURITY WARNING: unencrypted screen stream. Only use with your own trusted phone hotspot.",
+            "EXPERIMENTAL PREVIEW / Unencrypted display. Private hotspot only.",
             12f, Color.rgb(248, 151, 165), true
         ).apply { setPadding(0, dp(28), 0, 0) })
     }
