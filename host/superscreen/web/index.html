@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark">
+<title>SuperScreen — Windows in your hands</title>
+<style>
+:root{color-scheme:dark;--ink:#efeee7;--muted:#a5a6a1;--hint:#70736f;--edge:#343634;--paper:#0b0c0c;--well:#121414;--accent:#e3fa61;--alert:#fa9b89;--ok:#b9e58a}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--paper);color:var(--ink)}
+html{font-family:Inter,"Arial",system-ui,-apple-system,sans-serif;font-feature-settings:"tnum" 1}
+body{font-synthesis:none}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+[hidden]{display:none!important}::selection{background:var(--accent);color:#111}
+.site{width:min(1480px,100%);margin:0 auto;padding:0 clamp(18px,3vw,48px) 50px}
+.mast{height:77px;border-bottom:1px solid var(--edge);display:flex;justify-content:space-between;align-items:center;gap:20px}
+.wordmark{display:flex;align-items:center;gap:14px;text-transform:uppercase;letter-spacing:-.05em;font-size:22px;font-weight:850}
+.mark{width:31px;height:31px;display:grid;align-items:center;justify-items:center;position:relative}
+.mark:before,.mark:after{content:"";height:20px;width:8px;border:2px solid var(--accent);position:absolute;transform:skewY(-16deg)}
+.mark:before{left:3px;top:6px}.mark:after{right:3px;top:3px}
+.wordmark small{color:var(--accent);font-size:12px;letter-spacing:.1em;margin:0 0 0 3px;vertical-align:top}
+.headerRight{display:flex;align-items:center;gap:16px}
+.headerMeta{color:var(--hint);font-size:10px;letter-spacing:.17em;text-transform:uppercase}
+.state{display:flex;align-items:center;gap:9px;min-width:140px;justify-content:center;padding:11px 13px;border:1px solid var(--edge);font-size:12px;color:var(--ink);text-transform:uppercase;letter-spacing:.08em;background:#171919}
+.stateDot{height:7px;width:7px;background:#777;display:block;border-radius:50%}.stateDot.live{background:var(--accent);box-shadow:0 0 0 3px #c5e65222}
+.intro{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:58px 0 36px}
+.kicker{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.17em}
+h1{font-size:clamp(37px,5.8vw,80px);line-height:.99;letter-spacing:-.072em;font-weight:780;margin:14px 0 0}
+h1 em{font-weight:400;font-style:normal;color:#999e97}
+.lede{max-width:285px;line-height:1.48;font-size:13px;color:var(--muted);margin:0 0 6px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;border-top:1px solid var(--edge);border-bottom:1px solid var(--edge)}
+.workspace{padding:25px 26px 23px 0;min-width:0}
+.headline{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:17px}
+.sectionLabel{font-size:11px;letter-spacing:.16em;font-weight:750;text-transform:uppercase}
+.minor{color:var(--hint);font-size:11px;letter-spacing:.05em}
+.viewport{background:#050606;position:relative;border:1px solid #44484a;aspect-ratio:16/10;overflow:hidden;min-height:190px}
+.viewport:before{content:"";position:absolute;z-index:1;pointer-events:none;inset:0;border:7px solid rgba(0,0,0,.35)}
+#screen{width:100%;height:100%;object-fit:contain;display:block}
+.placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:12px;padding:28px}
+.placeholderGlyph{font-size:clamp(70px,11vw,135px);line-height:1;letter-spacing:-.12em;font-weight:200;color:#333837;margin:0}
+.placeholder strong{font-size:16px;letter-spacing:-.02em;font-weight:650}.placeholder small{font-size:12px;color:var(--muted);max-width:280px;line-height:1.5}
+#screen.hasFrame + .placeholder{display:none}
+.frameFoot{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:58px}
+.frameFoot .minor{line-height:1.35}
+.btn{border:1px solid #4f514f;background:transparent;color:var(--ink);min-height:43px;padding:11px 14px;letter-spacing:.02em;font-size:12px;font-weight:700;white-space:nowrap}
+.btn:hover{border-color:var(--ink)}.btn.primary{background:var(--accent);color:#141713;border-color:var(--accent);font-weight:800}
+.btn.primary:hover{background:#f0ff9f}
+.side{border-left:1px solid var(--edge)}
+.sideBlock{padding:25px 22px;border-bottom:1px solid var(--edge)}
+.sideBlock:last-child{border-bottom:0}
+.sideTitle{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:10px}
+.sideTitle .sectionLabel{font-size:10px}.num{color:#5b5e59;font-size:11px;letter-spacing:.11em}
+.field{display:block;color:var(--muted);font-size:11px;letter-spacing:.04em;margin-bottom:10px}
+.input,select{border:1px solid #4a4d49;background:#1b1e1e;color:#eeefe8;min-height:49px;width:100%;padding:12px;font-size:14px;border-radius:0}
+.input:focus,select:focus{border-color:var(--accent)}
+.micro{color:#949993;font-size:12px;line-height:1.65;margin:14px 0 0}
+.metrics{display:grid;grid-template-columns:1fr 1fr;margin:22px 0 0;border-top:1px solid var(--edge)}
+.metric{padding-top:15px}.metric + .metric{border-left:1px solid var(--edge);padding-left:18px}
+.metric strong{display:block;font-size:23px;font-weight:600;letter-spacing:-.06em}.metric span{font-size:10px;color:var(--hint);text-transform:uppercase;letter-spacing:.11em}
+.warning{border-left:2px solid var(--alert);padding-left:13px;color:#c2c4bc;font-size:12px;line-height:1.58}
+.actionLine{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:20px}
+.link{background:none;border:0;padding:6px 0;color:var(--accent);text-decoration:underline;text-underline-offset:4px;font-size:12px}
+.pairPanel{border:1px solid #646f3c;background:#151813;padding:28px;margin:0 0 23px;display:flex;align-items:center;justify-content:space-between;gap:25px}
+.pairCopy{max-width:390px}.pairCopy h2{font-size:24px;letter-spacing:-.05em;margin:11px 0 8px}
+.pairCopy p{font-size:12px;color:var(--muted);line-height:1.55;margin:0}
+.pairForm{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.pairForm .field{font-size:10px;text-transform:uppercase}.pairForm .input{font-size:20px;letter-spacing:.25em;text-align:center;font-variant-numeric:tabular-nums;width:176px}
+.pairError{color:var(--alert);font-size:12px;line-height:1.4;max-width:220px;min-height:14px}
+.bottom{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:20px 0;color:var(--hint);font-size:10px;letter-spacing:.07em}
+.bottom strong{color:#b7bdb3;font-weight:650}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.workspace{padding:18px 0 12px}.side{border-left:0;border-top:1px solid var(--edge);display:grid;grid-template-columns:1fr 1fr}.sideBlock + .sideBlock{border-left:1px solid var(--edge)}.intro{padding:38px 0 28px}.headerMeta{display:none}}
+@media(max-width:620px){.mast{height:64px}.site{padding-inline:15px}.wordmark{font-size:18px;gap:8px}.state{padding:10px;min-width:0;font-size:10px}.intro{display:block;padding:32px 0 26px}h1{font-size:clamp(42px,13vw,74px)}.lede{max-width:340px;margin-top:20px}.side{display:block}.sideBlock + .sideBlock{border-left:0;border-top:1px solid var(--edge)}.pairPanel{display:block;padding:20px}.pairForm{margin-top:20px;display:flex;align-items:flex-end}.pairForm .input{width:155px}.pairForm .btn{flex:1}.headline{gap:10px}.minor{font-size:10px}.viewport{min-height:175px}.frameFoot{padding:10px 0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="site">
+<header class="mast">
+  <div class="wordmark"><span class="mark" aria-hidden="true"></span><span>SuperScreen<small>01</small></span></div>
+  <div class="headerRight"><span class="headerMeta">Local display / 01</span><span class="state" aria-live="polite"><span class="stateDot" id="statusDot"></span><span id="status">Not connected</span></span></div>
+</header>
+<main>
+  <div class="intro">
+    <div><div class="kicker">DIRECT DISPLAY / ALPHA 0.1</div><h1>Windows.<br><em>On your phone.</em></h1></div>
+    <p class="lede">A local connection between your PC and Android device. Your phone can host the hotspot and receive the screen. No cloud server required.</p>
+  </div>
+  <section class="pairPanel" id="pairPanel">
+    <div class="pairCopy"><div class="kicker">SETUP / 01</div><h2>Pair with Windows.</h2><p>Enter the six-digit code shown in your Windows SuperScreen terminal. The code is one-time use and expires after five minutes.</p></div>
+    <div>
+      <form id="pairForm" class="pairForm">
+        <div><label class="field" for="code">Six-digit code</label><input class="input" id="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="000000" required></div>
+        <button class="btn primary" type="submit">Connect ↗</button>
+      </form>
+      <div class="pairError" role="alert" id="pairError"></div>
+    </div>
+  </section>
+  <div class="grid">
+    <section class="workspace" aria-label="Live screen viewer">
+      <div class="headline"><span class="sectionLabel">01 / Live workspace</span><span class="minor" id="dimensions">Waiting for screen</span></div>
+      <div class="viewport" id="screenWrap">
+        <canvas id="screen" aria-label="Live Windows screen preview"></canvas>
+        <div class="placeholder"><div class="placeholderGlyph" aria-hidden="true">⌗</div><strong id="waitingTitle">No active display</strong><small id="waitingMessage">Pair your computer, then select the monitor you want to view.</small></div>
+      </div>
+      <div class="frameFoot"><span class="minor" id="lastFrame">Display is offline</span><button class="btn" id="fullscreen" type="button">Fullscreen ↗</button></div>
+    </section>
+    <aside class="side" aria-label="Display controls and connection">
+      <div class="sideBlock">
+        <div class="sideTitle"><span class="sectionLabel">Monitor routing</span><span class="num">02</span></div>
+        <label for="monitors" class="field">Windows display source</label>
+        <select id="monitors" disabled><option>Connect to select</option></select>
+        <p class="micro">Choose the display showing your open apps. If the damaged laptop panel is Display 1, try the external TV's display number instead.</p>
+        <div class="metrics"><div class="metric"><strong id="fps">—</strong><span>Frames / sec</span></div><div class="metric"><strong id="resolution">—</strong><span>Image width</span></div></div>
+      </div>
+      <div class="sideBlock">
+        <div class="sideTitle"><span class="sectionLabel">Privacy &amp; access</span><span class="num">03</span></div>
+        <div class="warning"><strong>Private hotspot only.</strong> This experimental stream is not encrypted. Use only your own password-protected phone hotspot, and avoid sensitive content.</div>
+        <p class="micro">This build mirrors one existing Windows monitor. It does not create an extended display or send touch controls back to Windows.</p>
+        <div class="actionLine"><span class="minor">Pairing saved on this phone</span><button class="link" id="forget" type="button">Forget device</button></div>
+      </div>
+    </aside>
+  </div>
+</main>
+<footer class="bottom"><span><strong>SuperScreen</strong> / Made for direct connections</span><span>Experimental build · Local only</span></footer>
+</div>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const tokenKey='superscreen:pair-token:v1', monitorKey='superscreen:monitor:v1';
+let token=localStorage.getItem(tokenKey),ws=null,retryTimer=null,attempt=0,frameCount=0,lastSample=performance.now(),pendingFrame=false,hasFrame=false,connected=false;
+function status(message,live=false){$('status').textContent=message;$('statusDot').classList.toggle('live',live)}
+function waiting(title,msg){$('waitingTitle').textContent=title;$('waitingMessage').textContent=msg}
+function setPaired(value){$('pairPanel').hidden=value}
+function reconnectLater(){
+  if(!token || retryTimer)return;
+  const delay=Math.min(2000*Math.pow(1.6,attempt++),20000);
+  status('Reconnecting…');
+  waiting('Reconnecting','Checking your local hotspot connection…');
+  retryTimer=setTimeout(()=>{retryTimer=null;connect()},delay);
+}
+function connect(){
+  if(!token)return;
+  if(ws && (ws.readyState===WebSocket.OPEN||ws.readyState===WebSocket.CONNECTING))return;
+  status('Connecting…');
+  setPaired(true);
+  const proto=location.protocol==='https:'?'wss':'ws';
+  const socket=new WebSocket(proto+'://'+location.host+'/ws');
+  ws=socket; socket.binaryType='blob';
+  socket.onopen=()=>socket.send(JSON.stringify({type:'authenticate',token}));
+  socket.onmessage=async event=>{
+    if(typeof event.data==='string'){
+      let data;try{data=JSON.parse(event.data)}catch{return}
+      if(data.type==='ready'){
+        connected=true;attempt=0;status('Connected',true);
+        const selection=$('monitors');selection.disabled=false;selection.replaceChildren();
+        for(const m of data.monitors){
+          const option=document.createElement('option');
+          option.value=String(m.index);
+          option.textContent='Display '+m.index+' · '+m.width+'×'+m.height;
+          selection.append(option);
+        }
+        const requested=Number(localStorage.getItem(monitorKey));
+        const available=data.monitors.some(m=>m.index===requested);
+        selection.value=String(available?requested:data.selected);
+        if(available && requested!==data.selected)socket.send(JSON.stringify({type:'select-monitor',index:requested}));
+        waiting('Receiving video…','The first frame should appear shortly.');
+      }else if(data.type==='error'){
+        waiting('Display unavailable',data.message||'Check the Windows host.');
+        if(data.message==='Pairing required'){token=null;localStorage.removeItem(tokenKey);setPaired(false);status('Pairing required')}
+      }else if(data.type==='selected'){
+        $('monitors').value=String(data.index);
+      }
+      return;
+    }
+    if(pendingFrame)return; // Drop stale frames rather than accumulate decoding work
+    pendingFrame=true;
+    try{
+      const bitmap=await createImageBitmap(event.data);
+      const canvas=$('screen');
+      if(canvas.width!==bitmap.width||canvas.height!==bitmap.height){canvas.width=bitmap.width;canvas.height=bitmap.height}
+      const context=canvas.getContext('2d',{alpha:false});
+      context.drawImage(bitmap,0,0);
+      bitmap.close();
+      if(!hasFrame){canvas.classList.add('hasFrame');hasFrame=true}
+      $('dimensions').textContent=canvas.width+' × '+canvas.height;
+      $('resolution').textContent=canvas.width+'p';
+      $('lastFrame').textContent='Live screen preview · view only';
+      frameCount++;
+      if(performance.now()-lastSample>1500){$('fps').textContent=String(Math.round(frameCount*1000/(performance.now()-lastSample)));frameCount=0;lastSample=performance.now()}
+    }catch(err){waiting('Frame decode failed',String(err).slice(0,90))}
+    finally{pendingFrame=false}
+  };
+  socket.onerror=()=>{status('Connection interrupted')};
+  socket.onclose=()=>{
+    if(ws!==socket)return;
+    connected=false;$('monitors').disabled=true;
+    if(token)reconnectLater();
+  };
+}
+$('pairForm').addEventListener('submit',async e=>{
+  e.preventDefault();$('pairError').textContent='';
+  const code=$('code').value.trim();
+  if(!/^\d{6}$/.test(code)){$('pairError').textContent='Enter exactly six digits.';return}
+  try{
+    const response=await fetch('/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})});
+    if(!response.ok)throw new Error(response.status===429?'Too many attempts. Retry in one minute.':'Incorrect or expired code.');
+    const result=await response.json();token=result.token;localStorage.setItem(tokenKey,token);$('code').value='';setPaired(true);attempt=0;connect();
+  }catch(err){$('pairError').textContent=err.message||'Cannot reach Windows. Check the hotspot.'}
+});
+$('monitors').addEventListener('change',()=>{
+  const index=Number($('monitors').value);
+  if(Number.isInteger(index)){localStorage.setItem(monitorKey,String(index));if(ws && ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'select-monitor',index}))}
+});
+$('fullscreen').addEventListener('click',async()=>{
+  try{if(document.fullscreenElement)await document.exitFullscreen();else await $('screenWrap').requestFullscreen()}catch{}
+});
+$('forget').addEventListener('click',()=>{
+  if(retryTimer){clearTimeout(retryTimer);retryTimer=null}
+  token=null;localStorage.removeItem(tokenKey);localStorage.removeItem(monitorKey);
+  if(ws){const old=ws;ws=null;old.close()}
+  connected=false;hasFrame=false;$('screen').classList.remove('hasFrame');
+  setPaired(false);status('Not connected');waiting('Ready when you are','Enter a fresh pairing code from your Windows laptop.');
+});
+setPaired(Boolean(token));if(token)connect();
+})();
+</script>
+</body>
+</html>

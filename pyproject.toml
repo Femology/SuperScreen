@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "superscreen"
+version = "0.1.0"
+description = "Local Windows-to-Android browser mirroring prototype"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "SuperScreen Contributors" }]
+dependencies = [
+  "aiohttp>=3.10,<4",
+  "mss>=9,<11",
+  "Pillow>=10,<13",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-asyncio>=0.23,<2"]
+
+[project.scripts]
+superscreen = "superscreen.__main__:main"
+
+[tool.setuptools]
+package-dir = { "" = "host" }
+
+[tool.setuptools.packages.find]
+where = ["host"]
+
+[tool.setuptools.package-data]
+superscreen = ["web/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["host/tests"]
