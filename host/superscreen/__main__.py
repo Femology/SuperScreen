@@ -8,7 +8,7 @@ from aiohttp import web
 
 from .auth import PairingManager
 from .capture import list_monitors
-from .network import discover_lan_ips
+from .network import discover_lan_ips, bind_addresses
 from .server import create_app
 
 
@@ -30,7 +30,8 @@ def main() -> None:
     print("  WARNING: unencrypted local traffic. Use only a trusted private hotspot.\n")
     print("  Pairing code:", pairing.code)
     print("  Open one of these addresses ON YOUR PHONE (while hotspot is on):")
-    for ip in discover_lan_ips():
+    private_ips = discover_lan_ips()
+    for ip in private_ips:
         print(f"    http://{ip}:{args.port}")
     print(f"    http://127.0.0.1:{args.port}  (this PC only)")
     print("  If no hotspot address appears, run 'ipconfig' and use the laptop Wi-Fi IPv4 address.")
@@ -49,7 +50,11 @@ def main() -> None:
     )
     # The port is exposed on the phone's local network to support phone-as-hotspot.
     # Firewall should allow only Private networks.
-    web.run_app(app, host="0.0.0.0", port=args.port, print=None)
+    hosts = bind_addresses(private_ips)
+    if len(hosts) == 1:
+        print("  No private IPv4 address detected. Turn on the phone hotspot, connect Windows, and restart.")
+    print("  Listening only on:", ", ".join(hosts))
+    web.run_app(app, host=hosts, port=args.port, print=None)
 
 
 if __name__ == "__main__":
