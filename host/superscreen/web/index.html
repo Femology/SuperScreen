@@ -3,105 +3,126 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#090b11">
+<meta name="theme-color" content="#08090a">
 <meta name="referrer" content="no-referrer">
-<title>SuperScreen • Your PC, everywhere</title>
+<meta name="color-scheme" content="dark">
+<title>SuperScreen — Windows in your hands</title>
 <style>
-:root{color-scheme:dark;--bg:#090b11;--panel:#10141d;--panel2:#161c27;--line:#263040;--ink:#f3f7ff;--muted:#95a3b7;--accent:#8b84ff;--cyan:#73e0d4;--red:#ff8b9c}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
-body{background-image:radial-gradient(circle at 90% 4%,#22234a66,transparent 30rem),radial-gradient(circle at -5% 70%,#12333966,transparent 28rem)}
-button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
-.page{max-width:1160px;margin:0 auto;padding:24px clamp(16px,4vw,46px) 56px}
-header{display:flex;gap:15px;align-items:center;justify-content:space-between;padding-bottom:38px}
-.brand{display:flex;align-items:center;gap:11px;font-size:15px;font-weight:850;letter-spacing:.15em}
-.logo{display:grid;place-items:center;background:linear-gradient(140deg,#8276ff,#45dccc);width:38px;height:38px;border-radius:12px;color:#07090e;font-size:24px;box-shadow:0 9px 35px #867aff40}
-.topRight{display:flex;gap:10px;align-items:center}
-.eyebrow{color:var(--cyan);font-size:11px;font-weight:850;letter-spacing:.18em;text-transform:uppercase}
-.badge{padding:8px 11px;border:1px solid var(--line);background:#121824;border-radius:999px;font-size:12px;color:var(--muted);display:flex;gap:7px;align-items:center}
-.dot{width:7px;height:7px;border-radius:100%;background:#768396;box-shadow:0 0 10px #76839655}.dot.live{background:var(--cyan);box-shadow:0 0 12px #73e0d4}
-h1{letter-spacing:-.045em;font-size:clamp(36px,6vw,66px);line-height:1.03;margin:13px 0 15px;font-weight:850}
-.grad{background:linear-gradient(100deg,#a5a5ff,#84e9df);-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{color:var(--muted);line-height:1.6;max-width:650px;font-size:clamp(14px,2vw,17px)}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 258px;gap:18px;margin-top:28px}
-.card{background:#10141de8;border:1px solid #293140;border-radius:21px;box-shadow:0 20px 56px #0004;overflow:hidden}
-.cardHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:17px 19px;border-bottom:1px solid var(--line)}
-.cardHead strong{font-size:14px}.tiny{font-size:12px;color:var(--muted)}
-.screenWrap{background:#020308;aspect-ratio:16/10;display:grid;place-items:center;position:relative;overflow:hidden;min-height:220px}
-#screen{display:block;width:100%;height:100%;object-fit:contain}
-.placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#a7afc5;gap:13px;text-align:center;padding:25px}
-.placeholderIcon{font-size:44px;filter:grayscale(.25);opacity:.7}
+:root{color-scheme:dark;--ink:#efeee7;--muted:#a5a6a1;--hint:#70736f;--edge:#343634;--paper:#0b0c0c;--well:#121414;--accent:#e3fa61;--alert:#fa9b89;--ok:#b9e58a}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--paper);color:var(--ink)}
+html{font-family:Inter,"Arial",system-ui,-apple-system,sans-serif;font-feature-settings:"tnum" 1}
+body{font-synthesis:none}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+[hidden]{display:none!important}::selection{background:var(--accent);color:#111}
+.site{width:min(1480px,100%);margin:0 auto;padding:0 clamp(18px,3vw,48px) 50px}
+.mast{height:77px;border-bottom:1px solid var(--edge);display:flex;justify-content:space-between;align-items:center;gap:20px}
+.wordmark{display:flex;align-items:center;gap:14px;text-transform:uppercase;letter-spacing:-.05em;font-size:22px;font-weight:850}
+.mark{width:31px;height:31px;display:grid;align-items:center;justify-items:center;position:relative}
+.mark:before,.mark:after{content:"";height:20px;width:8px;border:2px solid var(--accent);position:absolute;transform:skewY(-16deg)}
+.mark:before{left:3px;top:6px}.mark:after{right:3px;top:3px}
+.wordmark small{color:var(--accent);font-size:12px;letter-spacing:.1em;margin:0 0 0 3px;vertical-align:top}
+.headerRight{display:flex;align-items:center;gap:16px}
+.headerMeta{color:var(--hint);font-size:10px;letter-spacing:.17em;text-transform:uppercase}
+.state{display:flex;align-items:center;gap:9px;min-width:140px;justify-content:center;padding:11px 13px;border:1px solid var(--edge);font-size:12px;color:var(--ink);text-transform:uppercase;letter-spacing:.08em;background:#171919}
+.stateDot{height:7px;width:7px;background:#777;display:block;border-radius:50%}.stateDot.live{background:var(--accent);box-shadow:0 0 0 3px #c5e65222}
+.intro{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:58px 0 36px}
+.kicker{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.17em}
+h1{font-size:clamp(37px,5.8vw,80px);line-height:.99;letter-spacing:-.072em;font-weight:780;margin:14px 0 0}
+h1 em{font-weight:400;font-style:normal;color:#999e97}
+.lede{max-width:285px;line-height:1.48;font-size:13px;color:var(--muted);margin:0 0 6px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;border-top:1px solid var(--edge);border-bottom:1px solid var(--edge)}
+.workspace{padding:25px 26px 23px 0;min-width:0}
+.headline{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:17px}
+.sectionLabel{font-size:11px;letter-spacing:.16em;font-weight:750;text-transform:uppercase}
+.minor{color:var(--hint);font-size:11px;letter-spacing:.05em}
+.viewport{background:#050606;position:relative;border:1px solid #44484a;aspect-ratio:16/10;overflow:hidden;min-height:190px}
+.viewport:before{content:"";position:absolute;z-index:1;pointer-events:none;inset:0;border:7px solid rgba(0,0,0,.35)}
+#screen{width:100%;height:100%;object-fit:contain;display:block}
+.placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:12px;padding:28px}
+.placeholderGlyph{font-size:clamp(70px,11vw,135px);line-height:1;letter-spacing:-.12em;font-weight:200;color:#333837;margin:0}
+.placeholder strong{font-size:16px;letter-spacing:-.02em;font-weight:650}.placeholder small{font-size:12px;color:var(--muted);max-width:280px;line-height:1.5}
 #screen.hasFrame + .placeholder{display:none}
-.screenFooter{padding:13px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font-size:12px}
-.btn{border:1px solid #3b4258;background:#1b2230;color:#e9efff;padding:11px 13px;border-radius:12px;font-weight:700;transition:filter .2s}
-.btn:hover{filter:brightness(1.2)}.primary{border-color:transparent;color:#090b12;background:linear-gradient(110deg,#9892ff,#84e9df)}
-.side{display:flex;flex-direction:column;gap:17px}.pad{padding:20px}.sectionName{font-size:12px;letter-spacing:.15em;color:#b3bdce;text-transform:uppercase;font-weight:800;margin:0 0 18px}
-.field{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
-select,input{background:#1c2331;border:1px solid #3c4658;color:#f5f7ff;border-radius:12px;padding:12px;width:100%}
-select{max-width:100%}.hint{font-size:12px;line-height:1.65;color:var(--muted);margin:13px 0 0}
-.info{border:1px solid #2d4551;background:#10252b;border-radius:13px;padding:14px;color:#b7e1df;font-size:12px;line-height:1.6}
-.pair{max-width:460px;margin:0 auto 27px;background:linear-gradient(150deg,#171d2a,#10141c);border:1px solid #45446b;border-radius:20px;padding:24px;box-shadow:0 20px 50px #0005}
-.pair h2{font-size:22px;letter-spacing:-.03em;margin:5px 0}.pair p{color:var(--muted);line-height:1.5;font-size:14px;margin:9px 0 17px}
-.pair input{letter-spacing:.35em;text-align:center;font-weight:800;font-size:25px;font-variant-numeric:tabular-nums}
-.pair button{width:100%;margin-top:12px}.error{color:var(--red);font-size:13px;min-height:18px;margin-top:10px}
-.gridStats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:13px}.stat{padding:12px;border:1px solid var(--line);border-radius:12px;background:#0d111a}.stat strong{display:block;font-size:17px;margin-bottom:3px}.stat span{font-size:11px;color:var(--muted)}
-.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.link{color:#a9e8e3;text-decoration:underline;background:transparent;border:0;padding:0;font-size:12px}
-footer{padding-top:30px;text-align:center;font-size:12px;color:#7e8da4;line-height:1.6}
-@media(max-width:810px){header{padding-bottom:24px}.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.page{padding-top:16px}.screenWrap{aspect-ratio:16/10}.brand{font-size:12px}.badge{font-size:11px}}
-@media(max-width:530px){.side{grid-template-columns:1fr}.screenWrap{min-height:190px}.cardHead{padding:13px}.pad{padding:16px}.pair{padding:18px}header{gap:8px}.badge{padding:7px}.brand{gap:7px}.logo{width:33px;height:33px}.screenFooter{flex-wrap:wrap}}
-[hidden]{display:none!important}
+.frameFoot{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:58px}
+.frameFoot .minor{line-height:1.35}
+.btn{border:1px solid #4f514f;background:transparent;color:var(--ink);min-height:43px;padding:11px 14px;letter-spacing:.02em;font-size:12px;font-weight:700;white-space:nowrap}
+.btn:hover{border-color:var(--ink)}.btn.primary{background:var(--accent);color:#141713;border-color:var(--accent);font-weight:800}
+.btn.primary:hover{background:#f0ff9f}
+.side{border-left:1px solid var(--edge)}
+.sideBlock{padding:25px 22px;border-bottom:1px solid var(--edge)}
+.sideBlock:last-child{border-bottom:0}
+.sideTitle{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:10px}
+.sideTitle .sectionLabel{font-size:10px}.num{color:#5b5e59;font-size:11px;letter-spacing:.11em}
+.field{display:block;color:var(--muted);font-size:11px;letter-spacing:.04em;margin-bottom:10px}
+.input,select{border:1px solid #4a4d49;background:#1b1e1e;color:#eeefe8;min-height:49px;width:100%;padding:12px;font-size:14px;border-radius:0}
+.input:focus,select:focus{border-color:var(--accent)}
+.micro{color:#949993;font-size:12px;line-height:1.65;margin:14px 0 0}
+.metrics{display:grid;grid-template-columns:1fr 1fr;margin:22px 0 0;border-top:1px solid var(--edge)}
+.metric{padding-top:15px}.metric + .metric{border-left:1px solid var(--edge);padding-left:18px}
+.metric strong{display:block;font-size:23px;font-weight:600;letter-spacing:-.06em}.metric span{font-size:10px;color:var(--hint);text-transform:uppercase;letter-spacing:.11em}
+.warning{border-left:2px solid var(--alert);padding-left:13px;color:#c2c4bc;font-size:12px;line-height:1.58}
+.actionLine{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:20px}
+.link{background:none;border:0;padding:6px 0;color:var(--accent);text-decoration:underline;text-underline-offset:4px;font-size:12px}
+.pairPanel{border:1px solid #646f3c;background:#151813;padding:28px;margin:0 0 23px;display:flex;align-items:center;justify-content:space-between;gap:25px}
+.pairCopy{max-width:390px}.pairCopy h2{font-size:24px;letter-spacing:-.05em;margin:11px 0 8px}
+.pairCopy p{font-size:12px;color:var(--muted);line-height:1.55;margin:0}
+.pairForm{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.pairForm .field{font-size:10px;text-transform:uppercase}.pairForm .input{font-size:20px;letter-spacing:.25em;text-align:center;font-variant-numeric:tabular-nums;width:176px}
+.pairError{color:var(--alert);font-size:12px;line-height:1.4;max-width:220px;min-height:14px}
+.bottom{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:20px 0;color:var(--hint);font-size:10px;letter-spacing:.07em}
+.bottom strong{color:#b7bdb3;font-weight:650}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.workspace{padding:18px 0 12px}.side{border-left:0;border-top:1px solid var(--edge);display:grid;grid-template-columns:1fr 1fr}.sideBlock + .sideBlock{border-left:1px solid var(--edge)}.intro{padding:38px 0 28px}.headerMeta{display:none}}
+@media(max-width:620px){.mast{height:64px}.site{padding-inline:15px}.wordmark{font-size:18px;gap:8px}.state{padding:10px;min-width:0;font-size:10px}.intro{display:block;padding:32px 0 26px}h1{font-size:clamp(42px,13vw,74px)}.lede{max-width:340px;margin-top:20px}.side{display:block}.sideBlock + .sideBlock{border-left:0;border-top:1px solid var(--edge)}.pairPanel{display:block;padding:20px}.pairForm{margin-top:20px;display:flex;align-items:flex-end}.pairForm .input{width:155px}.pairForm .btn{flex:1}.headline{gap:10px}.minor{font-size:10px}.viewport{min-height:175px}.frameFoot{padding:10px 0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="page">
-<header>
-  <div class="brand"><span class="logo" aria-hidden="true">▣</span> SUPERSCREEN</div>
-  <div class="topRight"><span class="badge"><span id="statusDot" class="dot"></span><span id="status">Not connected</span></span></div>
+<div class="site">
+<header class="mast">
+  <div class="wordmark"><span class="mark" aria-hidden="true"></span><span>SuperScreen<small>®</small></span></div>
+  <div class="headerRight"><span class="headerMeta">Local display / 01</span><span class="state" aria-live="polite"><span class="stateDot" id="statusDot"></span><span id="status">Not connected</span></span></div>
 </header>
 <main>
-  <div class="eyebrow">Local display • experimental preview</div>
-  <h1>One computer.<br><span class="grad">Every screen.</span></h1>
-  <p class="sub">Your phone is the hotspot <em>and</em> the viewer. Pair once to see a Windows screen over your private local connection—no cloud and no second phone.</p>
-  <section class="pair" id="pairPanel">
-    <div class="eyebrow">First-time pairing</div>
-    <h2>Connect to your PC</h2>
-    <p>Enter the six-digit code printed in the SuperScreen Windows PowerShell window. The code expires after five minutes.</p>
-    <form id="pairForm">
-      <label for="code" class="field">Pairing code</label>
-      <input id="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="000000" required>
-      <button class="btn primary" type="submit">Pair and start viewing →</button>
-    </form>
-    <div class="error" id="pairError" role="alert"></div>
+  <div class="intro">
+    <div><div class="kicker">DIRECT DISPLAY / ALPHA 0.1</div><h1>Windows.<br><em>On your phone.</em></h1></div>
+    <p class="lede">A local connection between your PC and Android device. Your phone can host the hotspot and receive the screen. No cloud server required.</p>
+  </div>
+  <section class="pairPanel" id="pairPanel">
+    <div class="pairCopy"><div class="kicker">SETUP / 01</div><h2>Pair with Windows.</h2><p>Enter the six-digit code shown in your Windows SuperScreen terminal. The code is one-time use and expires after five minutes.</p></div>
+    <div>
+      <form id="pairForm" class="pairForm">
+        <div><label class="field" for="code">Six-digit code</label><input class="input" id="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="000000" required></div>
+        <button class="btn primary" type="submit">Connect ↗</button>
+      </form>
+      <div class="pairError" role="alert" id="pairError"></div>
+    </div>
   </section>
-  <div class="layout">
-    <section class="card">
-      <div class="cardHead"><div><strong>Live display</strong> <span class="tiny">· Windows mirror</span></div><span class="tiny" id="dimensions">Waiting for frames</span></div>
-      <div class="screenWrap" id="screenWrap">
-        <canvas id="screen" aria-label="Live Windows desktop stream"></canvas>
-        <div class="placeholder"><span class="placeholderIcon">▣</span><strong id="waitingTitle">Ready when you are</strong><span id="waitingMessage">Enter your code to begin receiving screen frames.</span></div>
+  <div class="grid">
+    <section class="workspace" aria-label="Live screen viewer">
+      <div class="headline"><span class="sectionLabel">01 / Live workspace</span><span class="minor" id="dimensions">Waiting for screen</span></div>
+      <div class="viewport" id="screenWrap">
+        <canvas id="screen" aria-label="Live Windows screen preview"></canvas>
+        <div class="placeholder"><div class="placeholderGlyph" aria-hidden="true">⌗</div><strong id="waitingTitle">No active display</strong><small id="waitingMessage">Pair your computer, then select the monitor you want to view.</small></div>
       </div>
-      <div class="screenFooter"><span id="lastFrame">No video yet</span><button class="btn" id="fullscreen" type="button">⛶ Full screen</button></div>
+      <div class="frameFoot"><span class="minor" id="lastFrame">Display is offline</span><button class="btn" id="fullscreen" type="button">Fullscreen ↗</button></div>
     </section>
-    <aside class="side">
-      <section class="card pad">
-        <p class="sectionName">Display control</p>
-        <label class="field" for="monitors">Windows monitor</label>
-        <select id="monitors" disabled><option>Pair your PC first</option></select>
-        <p class="hint">If the screen looks empty, select the monitor with the TV or open windows. This version mirrors an existing display; it does not create another monitor.</p>
-        <div class="gridStats">
-          <div class="stat"><strong id="fps">—</strong><span>Incoming FPS</span></div>
-          <div class="stat"><strong id="resolution">—</strong><span>Stream size</span></div>
-        </div>
-      </section>
-      <section class="card pad">
-        <p class="sectionName">Connection</p>
-        <div class="info">🔒 <strong>Private hotspot only.</strong><br>Traffic is local but <strong>not encrypted yet</strong>. Avoid public networks until secure transport is implemented.</div>
-        <p class="hint">Keep the Windows host open. This proof of concept is currently <strong>view-only</strong>; your laptop keyboard and mouse remain local.</p>
-        <div class="row" style="margin-top:20px"><span class="tiny">Session saved on this phone</span><button class="link" type="button" id="forget">Forget pairing</button></div>
-      </section>
+    <aside class="side" aria-label="Display controls and connection">
+      <div class="sideBlock">
+        <div class="sideTitle"><span class="sectionLabel">Monitor routing</span><span class="num">02</span></div>
+        <label for="monitors" class="field">Windows display source</label>
+        <select id="monitors" disabled><option>Connect to select</option></select>
+        <p class="micro">Choose the display showing your open apps. If the damaged laptop panel is Display 1, try the external TV's display number instead.</p>
+        <div class="metrics"><div class="metric"><strong id="fps">—</strong><span>Frames / sec</span></div><div class="metric"><strong id="resolution">—</strong><span>Image width</span></div></div>
+      </div>
+      <div class="sideBlock">
+        <div class="sideTitle"><span class="sectionLabel">Privacy &amp; access</span><span class="num">03</span></div>
+        <div class="warning"><strong>Private hotspot only.</strong> This experimental stream is not encrypted. Use only your own password-protected phone hotspot, and avoid sensitive content.</div>
+        <p class="micro">This build mirrors one existing Windows monitor. It does not create an extended display or send touch controls back to Windows.</p>
+        <div class="actionLine"><span class="minor">Pairing saved on this phone</span><button class="link" id="forget" type="button">Forget device</button></div>
+      </div>
     </aside>
   </div>
 </main>
-<footer>SuperScreen v0.1 · No cloud · No second phone · Local mirroring prototype</footer>
+<footer class="bottom"><span><strong>SuperScreen</strong> / Made for direct connections</span><span>Experimental build · No shadcn · No cloud</span></footer>
 </div>
 <script>
 (function(){
