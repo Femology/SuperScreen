@@ -12,7 +12,11 @@ def is_usable_private_ip(value: str) -> bool:
         return False
     return (
         isinstance(ip, ipaddress.IPv4Address)
-        and ip.is_private
+        and any(ip in network for network in (
+            ipaddress.ip_network("10.0.0.0/8"),
+            ipaddress.ip_network("172.16.0.0/12"),
+            ipaddress.ip_network("192.168.0.0/16"),
+        ))
         and not (ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_unspecified)
     )
 
