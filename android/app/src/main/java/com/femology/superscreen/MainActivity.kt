@@ -26,8 +26,8 @@ import android.widget.TextView
 class MainActivity : Activity() {
     private var viewer: WebView? = null
     private val prefs by lazy { getSharedPreferences("superscreen", MODE_PRIVATE) }
-    private val background = Color.rgb(9, 11, 17)
-    private val foreground = Color.rgb(244, 247, 255)
+    private val backdropColor = Color.rgb(9, 11, 17)
+    private val inkColor = Color.rgb(244, 247, 255)
     private val muted = Color.rgb(154, 169, 191)
     private val accent = Color.rgb(145, 136, 255)
 
@@ -39,8 +39,8 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = background
-        window.navigationBarColor = background
+        window.statusBarColor = backdropColor
+        window.navigationBarColor = backdropColor
         showHome()
     }
 
@@ -56,7 +56,7 @@ class MainActivity : Activity() {
         val button = Button(this).apply {
             text = title
             isAllCaps = false
-            setTextColor(if (highlight) Color.BLACK else foreground)
+            setTextColor(if (highlight) Color.BLACK else inkColor)
             background = rounded(if (highlight) accent else Color.rgb(30, 36, 49))
             setOnClickListener { click() }
         }
@@ -69,11 +69,11 @@ class MainActivity : Activity() {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(24), dp(24), dp(24), dp(24))
-            setBackgroundColor(background)
+            setBackgroundColor(backdropColor)
         }
         setContentView(ScrollView(this).apply { addView(root) })
         root.addView(text("▣  SUPERSCREEN", 16f, accent, true))
-        root.addView(text("One computer.\nEvery screen.", 33f, foreground, true).apply {
+        root.addView(text("One computer.\nEvery screen.", 33f, inkColor, true).apply {
             setPadding(0, dp(35), 0, dp(20))
         })
         root.addView(text(
@@ -86,7 +86,7 @@ class MainActivity : Activity() {
         val address = EditText(this).apply {
             hint = "192.168.43.102"
             setSingleLine(true)
-            setTextColor(foreground)
+            setTextColor(inkColor)
             setHintTextColor(muted)
             inputType = android.text.InputType.TYPE_CLASS_TEXT
             background = rounded(Color.rgb(23, 29, 42))
@@ -128,7 +128,7 @@ class MainActivity : Activity() {
     private fun showViewer(host: String) {
         val outer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(background)
+            setBackgroundColor(backdropColor)
         }
         val header = LinearLayout(this).apply {
             gravity = Gravity.CENTER_VERTICAL
@@ -137,7 +137,7 @@ class MainActivity : Activity() {
         addButton(header, "← Change PC", false) { showHome() }
         outer.addView(header, LinearLayout.LayoutParams(-1, dp(63)))
         val web = WebView(this).apply {
-            setBackgroundColor(background)
+            setBackgroundColor(backdropColor)
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.allowFileAccess = false
