@@ -2,7 +2,7 @@
 
 **Turn an Android phone into a dependable display for a Windows PC — no router, cloud account, or second phone required.**
 
-> **Status: experimental Phase 1 prototype.** The initial receiver runs in an Android browser over the phone's own hotspot and **mirrors an existing Windows display**. It is **not** a native Android app, virtual monitor, USB transport, Windows login-screen solution, or production-secure remote-desktop service yet.
+> **Status: experimental Phase 1 prototype.** The first receiver runs in an Android browser over the phone's own hotspot and **mirrors an existing Windows display**. There is now also an **experimental native Android WebView launcher** (not yet a native video decoder). There is **no** true extended virtual monitor, USB transport, Windows login-screen access, or production-secure remote-desktop service yet.
 
 ## The first working slice
 
@@ -19,7 +19,7 @@ Android phone hotspot ── local Wi-Fi ── Windows 10/11 laptop
 
 Prerequisites: Windows 10/11, Python 3.11+, Android phone with hotspot, and temporary access to a working Windows display for setup.
 
-1. Clone this repository, open PowerShell in the project root, and run:
+1. Clone this repository, open PowerShell in the project root, then run **either** `./scripts/run-windows.ps1` for one-command setup **or** the following manual steps:
 
    ```powershell
    py -3 -m venv .venv
@@ -36,6 +36,14 @@ Prerequisites: Windows 10/11, Python 3.11+, Android phone with hotspot, and temp
 If PowerShell blocks activation, use `\.venv\Scripts\python.exe -m superscreen` instead.
 
 **Security warning:** Phase 1 uses unencrypted HTTP/WebSocket on a trusted personal hotspot. It does not yet provide encryption or authenticated device discovery. **Do not use on public/shared Wi-Fi or expose port 8765 to the internet.** No remote mouse/keyboard input is enabled in this release.
+
+### Android native alpha and portable Windows build
+
+The experimental [Android Kotlin launcher](android/README.md) embeds the browser receiver, remembers the laptop's local IP address, and opens wireless settings for hotspot setup. It does **not** decode native H.264 or activate the phone's hotspot automatically. Open `android/` in Android Studio to build it.
+
+CI also attempts to produce a **portable Windows host executable** and an **Android debug APK** as workflow artifacts. They are experimental and unsigned, not official releases. Download them only from this repository's own [GitHub Actions runs](https://github.com/Femology/SuperScreen/actions) after checking the jobs have passed.
+
+If manual Windows mirroring works and you want the Windows host to open after sign-in, run `./scripts/enable-autostart.ps1`. This is opt-in and can be undone with `./scripts/enable-autostart.ps1 -Remove`. It does **not** start at the Windows login screen or automatically join a hotspot that has never been saved.
 
 ### Running tests
 
@@ -56,7 +64,7 @@ python -m pytest -q
 | 6 | USB transport, packaging, accessibility, polish | Planned |
 | 7 | Security hardening, stress tests, signed installers | Planned |
 
-See [Architecture](docs/ARCHITECTURE.md), [Roadmap](docs/ROADMAP.md), and [Security](docs/SECURITY.md).
+See [Architecture](docs/ARCHITECTURE.md), [Roadmap](docs/ROADMAP.md), [Security](docs/SECURITY.md), [Test plan](docs/TEST-PLAN.md), and [Upstream licence study](docs/UPSTREAM.md).
 
 ## Important engineering distinction
 
