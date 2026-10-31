@@ -47,3 +47,21 @@ jobs:
         with:
           name: SuperScreen-Android-Alpha
           path: android/app/build/outputs/apk/debug/*.apk
+
+  windows-package:
+    name: Windows portable executable
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install host and packaging tools
+        run: python -m pip install -e . pyinstaller
+      - name: Build portable Windows host
+        shell: pwsh
+        run: pyinstaller --noconfirm --clean --onefile --name SuperScreen --paths host --add-data "host/superscreen/web/index.html;superscreen/web" host/launcher.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SuperScreen-Windows-Portable
+          path: dist/SuperScreen.exe
