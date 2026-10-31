@@ -12,6 +12,7 @@ from aiohttp import WSMsgType, web
 
 from .auth import PairingManager, PairingRateLimited
 from .capture import CaptureSession, list_monitors
+from .network import is_permitted_remote
 
 
 def create_app(
@@ -24,7 +25,13 @@ def create_app(
 ) -> web.Application:
     if not 1 <= fps <= 15:
         raise ValueError("fps must be between 1 and 15")
-    app = web.Application(client_max_size=2048)
+    @web.middleware
+    async def private_hotspot_only(request: web.Request, handler):
+        if not is_permitted_remote(request.remote or ""):
+            raise web.HTTPForbidden(text="Private hotspot connections only")
+        return await handler(request)
+
+    app = web.Application(client_max_size=2048, middlewares=[private_hotspot_only])
     app["pairing"] = pairing
     app["monitor"] = monitor
     app["fps"] = fps
