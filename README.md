@@ -4,6 +4,10 @@
 
 > **Status: experimental Phase 1 prototype.** The first receiver runs in an Android browser over the phone's own hotspot and **mirrors an existing Windows display**. There is now also an **experimental native Android WebView launcher** (not yet a native video decoder). There is **no** true extended virtual monitor, USB transport, Windows login-screen access, or production-secure remote-desktop service yet.
 
+## Windows build and USB hardware gates
+
+GitHub Actions now runs the Python test suite on a **Windows runner**, probes local adapter enumeration, packages an unsigned Windows EXE, and starts its `--help` CLI as a smoke test. These checks have been **configured**, but their success and real USB/display operation require verification. Use the [Windows real-hardware test checklist](docs/TEST-WINDOWS.md) for the USB-tether, pairing and virtual-display gates, and see [Windows driver research](windows/driver/README.md) before installing any virtual monitor driver.
+
 ## Linux + Android hardware trial (2026-11-02)
 
 Before attempting a Windows virtual-driver installation, test the **existing SuperScreen mirror** on a permitted Linux machine using a private Android USB-tether connection. Linux USB interface discovery and X11/MSS caveat detection have been added, with tests. The Linux test **does not** establish Windows IDD or SuperDisplay driver compatibility.
