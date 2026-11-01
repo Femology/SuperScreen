@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import os
 import sys
 
 from .auth import PairingManager
@@ -25,8 +26,14 @@ def main() -> None:
     p.add_argument("--quality", type=int, default=60, help="JPEG quality 20-95")
     args = p.parse_args()
 
-    if sys.platform != "win32":
-        print("Warning: designed for Windows; other systems are not yet validated.")
+    if sys.platform.startswith("linux"):
+        session = os.environ.get("XDG_SESSION_TYPE", "unknown")
+        print(f"  Linux test session: {session}")
+        if session.lower() != "x11":
+            print("  WARNING: screenshot capture uses MSS/X11; Wayland may be unavailable.")
+        print("  Linux mirroring experiment only: no Linux/Windows virtual display driver.")
+    elif sys.platform != "win32":
+        print("Warning: this operating system has not been validated.")
     if not (1 <= args.port <= 65535 and 160 <= args.max_width <= 3840 and 20 <= args.quality <= 95):
         p.error("Invalid port, width or quality")
 
