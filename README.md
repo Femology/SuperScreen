@@ -4,6 +4,12 @@
 
 > **Status: experimental Phase 1 prototype.** The first receiver runs in an Android browser over the phone's own hotspot and **mirrors an existing Windows display**. There is now also an **experimental native Android WebView launcher** (not yet a native video decoder). There is **no** true extended virtual monitor, USB transport, Windows login-screen access, or production-secure remote-desktop service yet.
 
+## Linux + Android hardware trial (2026-11-02)
+
+Before attempting a Windows virtual-driver installation, test the **existing SuperScreen mirror** on a permitted Linux machine using a private Android USB-tether connection. Linux USB interface discovery and X11/MSS caveat detection have been added, with tests. The Linux test **does not** establish Windows IDD or SuperDisplay driver compatibility.
+
+Read the exact [Linux test checklist](docs/TEST-LINUX.md). Separately, [UScreen](https://github.com/majmichu1/UScreen) can be used as a reference for a **true Linux extended monitor** through its own matched host/Android release, subject to permission to install kernel modules. No claim is made that SuperScreen Android can use UScreen's host protocol.
+
 ## New: experimental USB-tether discovery (source added 2026-11-01)
 
 An Android **USB-tethered network connection** may now carry the existing SuperScreen mirror stream without an external router. The Windows host watches for private USB/RNDIS network interfaces after start, and the Android app can look for the **SuperScreen Windows host** by scanning its own private local subnet. Manual IP entry remains available.
