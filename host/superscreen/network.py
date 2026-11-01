@@ -5,6 +5,7 @@ Never bind the unencrypted preview to a public interface or 0.0.0.0.
 from __future__ import annotations
 
 import ipaddress
+import json
 import socket
 import subprocess
 import sys
@@ -49,6 +50,40 @@ def _windows_adapter_ipv4s() -> set[str]:
     return set(result.stdout.splitlines()) if result.returncode == 0 else set()
 
 
+
+def _linux_adapter_ipv4s() -> set[str]:
+    """Read assigned Linux interface addresses (including USB/RNDIS tethering).
+
+    Hostname lookup on Ubuntu often resolves to loopback only. iproute2's
+    JSON output provides the assigned local addresses without requiring sudo.
+    No external network probes, daemon writes, or privileges are used.
+    """
+    if not sys.platform.startswith("linux"):
+        return set()
+    try:
+        result = subprocess.run(
+            ["ip", "-j", "-4", "addr", "show"],
+            capture_output=True, text=True, timeout=3, check=False,
+        )
+        if result.returncode != 0:
+            return set()
+        adapters = json.loads(result.stdout)
+        if not isinstance(adapters, list):
+            return set()
+        ips: set[str] = set()
+        for adapter in adapters:
+            if not isinstance(adapter, dict):
+                continue
+            for address in adapter.get("addr_info", []):
+                if isinstance(address, dict) and address.get("family") == "inet":
+                    local = address.get("local")
+                    if isinstance(local, str) and is_usable_private_ip(local):
+                        ips.add(local)
+        return ips
+    except (OSError, ValueError, TypeError, subprocess.TimeoutExpired):
+        return set()
+
+
 def discover_lan_ips() -> list[str]:
     values: set[str] = set()
     try:
@@ -68,6 +103,7 @@ def discover_lan_ips() -> list[str]:
     except OSError:
         pass
     values.update(_windows_adapter_ipv4s())
+    values.update(_linux_adapter_ipv4s())
     return sorted(
         (ip for ip in values if is_usable_private_ip(ip)),
         key=lambda ip: tuple(map(int, ip.split("."))),
