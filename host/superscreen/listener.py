@@ -28,7 +28,8 @@ class PrivateInterfaceListener:
 
     async def refresh(self) -> None:
         # Discover via hostname + native Windows adapter enumeration.
-        wanted = set(bind_addresses(discover_lan_ips()))
+        # PowerShell interface enumeration can take seconds; never stall video frames.
+        wanted = set(bind_addresses(await asyncio.to_thread(discover_lan_ips)))
         for address in list(self.sites):
             if address not in wanted:
                 await self.sites.pop(address).stop()
