@@ -4,6 +4,14 @@
 
 > **Status: experimental Phase 1 prototype.** The first receiver runs in an Android browser over the phone's own hotspot and **mirrors an existing Windows display**. There is now also an **experimental native Android WebView launcher** (not yet a native video decoder). There is **no** true extended virtual monitor, USB transport, Windows login-screen access, or production-secure remote-desktop service yet.
 
+## New: experimental USB-tether discovery (source added 2026-11-01)
+
+An Android **USB-tethered network connection** may now carry the existing SuperScreen mirror stream without an external router. The Windows host watches for private USB/RNDIS network interfaces after start, and the Android app can look for the **SuperScreen Windows host** by scanning its own private local subnet. Manual IP entry remains available.
+
+This is a **TCP network over USB**, not a SuperDisplay driver adapter, AOAP protocol implementation, ADB reverse tunnel, Windows IDD, or functioning screenless rescue. It requires SuperScreen's own Windows host to be running, first pairing, permissive **trusted private** Windows firewall rules, and an already enumerated Windows display. Automatic discovery and new Android code have not yet been hardware validated. Do **not** rely on this preview as your only screen.
+
+See [Android USB/tethering setup](android/README.md), [read-only Windows diagnostics](scripts/driver-readiness.ps1), and [real virtual-driver project and acceptance gates](windows/driver/README.md).
+
 ## The first working slice
 
 ```
