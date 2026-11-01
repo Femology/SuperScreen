@@ -8,24 +8,31 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.webkit.WebResourceRequest
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import kotlin.concurrent.thread
 
 /**
- * Native Android launcher for the experimental browser-based viewer.
- * View-only over local HTTP: not a true second monitor, MediaCodec decoder,
- * unattended hotspot controller, or production-secure remote desktop.
+ * First-party Android receiver for the experimental SuperScreen Windows host.
+ * USB tethering / own-phone hotspot use ordinary TCP, NOT SuperDisplay USB.
+ *
+ * The current host mirrors an existing Windows display. A separate Windows
+ * Indirect Display Driver (IDD) is needed for a true extended virtual monitor.
  */
 class MainActivity : Activity() {
     private var viewer: WebView? = null
     private val prefs by lazy { getSharedPreferences("superscreen", MODE_PRIVATE) }
+    private var discoveryGeneration = 0
+    private var discovering = false
     private val backdropColor = Color.rgb(8, 9, 10)
     private val inkColor = Color.rgb(239, 238, 231)
     private val muted = Color.rgb(161, 166, 159)
@@ -43,7 +50,7 @@ class MainActivity : Activity() {
         window.navigationBarColor = backdropColor
         val remembered = prefs.getString("host", null)
         if (remembered != null && validPrivateIPv4(remembered)) {
-            showViewer(remembered) // One-tap launch after initial trusted pairing
+            showViewer(remembered)
         } else {
             showHome()
         }
@@ -57,18 +64,33 @@ class MainActivity : Activity() {
             if (bold) setTypeface(typeface, Typeface.BOLD)
         }
 
-    private fun addButton(root: LinearLayout, title: String, highlight: Boolean, click: () -> Unit) {
-        val button = Button(this).apply {
+    private fun button(title: String, highlight: Boolean, click: () -> Unit): Button =
+        Button(this).apply {
             text = title
             isAllCaps = false
             setTextColor(if (highlight) Color.BLACK else inkColor)
             background = rounded(if (highlight) accent else Color.rgb(28, 30, 29))
             setOnClickListener { click() }
         }
-        root.addView(button, LinearLayout.LayoutParams(-1, dp(52)).apply { topMargin = dp(12) })
+
+    private fun addButton(root: LinearLayout, title: String, highlight: Boolean, click: () -> Unit) {
+        root.addView(button(title, highlight, click),
+            LinearLayout.LayoutParams(-1, dp(52)).apply { topMargin = dp(12) })
     }
 
-    private fun showHome() {
+    private fun immersive(enabled: Boolean) {
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility = if (enabled) (
+            View.SYSTEM_UI_FLAG_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        ) else 0
+    }
+
+    private fun showHome(message: String? = null) {
+        discoveryGeneration++ // Discard callbacks from any prior discovery screen.
+        immersive(false)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         viewer?.destroy()
         viewer = null
         val root = LinearLayout(this).apply {
@@ -78,18 +100,49 @@ class MainActivity : Activity() {
         }
         setContentView(ScrollView(this).apply { addView(root) })
         root.addView(text("▣   SUPER/SCREEN", 15f, accent, true))
-        root.addView(text("Windows.\nOn your phone.", 33f, inkColor, true).apply {
+        root.addView(text("Your Windows.\\nYour phone.", 33f, inkColor, true).apply {
             setPadding(0, dp(35), 0, dp(20))
         })
         root.addView(text(
-            "Your phone can run the hotspot and receive the Windows display. No router, second phone, or cloud server.",
+            "Use your own hotspot or a USB-tethered connection. Only the locally installed SuperScreen Windows host can connect.",
             15f, muted
         ))
-        root.addView(text("01 / WINDOWS HOST ADDRESS", 12f, accent, true).apply {
-            setPadding(0, dp(36), 0, dp(9))
+        root.addView(text("01 / FIND THE COMPUTER", 12f, accent, true).apply {
+            setPadding(0, dp(28), 0, dp(9))
+        })
+        val searchStatus = text(
+            message ?: "Connect USB and enable USB tethering, or turn on your phone hotspot and join it from Windows.",
+            13f, muted
+        )
+        addButton(root, "FIND SUPER/SCREEN HOST", true) {
+            if (!discovering) {
+                discovering = true
+                searchStatus.text = "Searching your own USB / Wi-Fi subnet for SuperScreen…"
+                val current = ++discoveryGeneration
+                thread(name = "superscreen-local-discovery", isDaemon = true) {
+                    val host = HostDiscovery.findWindowsHost()
+                    runOnUiThread {
+                        if (isFinishing || isDestroyed || current != discoveryGeneration) return@runOnUiThread
+                        discovering = false
+                        if (host == null) {
+                            searchStatus.text = "No SuperScreen host found. Confirm the Windows host is running, the USB tether or private hotspot is active, and Windows firewall permits TCP 8765."
+                        } else {
+                            prefs.edit().putString("host", host).apply()
+                            showViewer(host)
+                        }
+                    }
+                }
+            }
+        }
+        root.addView(searchStatus.apply { setPadding(0, dp(14), 0, dp(12)) })
+        addButton(root, "OPEN USB TETHERING / NETWORK SETTINGS", false) {
+            startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
+        }
+        root.addView(text("02 / OR ENTER WINDOWS ADDRESS", 12f, accent, true).apply {
+            setPadding(0, dp(28), 0, dp(9))
         })
         val address = EditText(this).apply {
-            hint = "192.168.43.102"
+            hint = "192.168.42.101"
             setSingleLine(true)
             setTextColor(inkColor)
             setHintTextColor(muted)
@@ -99,30 +152,27 @@ class MainActivity : Activity() {
             setText(prefs.getString("host", ""))
         }
         root.addView(address, LinearLayout.LayoutParams(-1, dp(54)))
-        addButton(root, "CONNECT TO WINDOWS  ↗", true) {
+        addButton(root, "CONNECT MANUALLY", false) {
             val value = address.text.toString().trim()
             if (!validPrivateIPv4(value)) {
-                address.error = "Enter a private IPv4 address from Windows PowerShell"
+                address.error = "Enter the private IPv4 address shown by the Windows host"
             } else {
                 prefs.edit().putString("host", value).apply()
                 showViewer(value)
             }
         }
-        addButton(root, "OPEN HOTSPOT SETTINGS", false) {
-            startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
-        }
         root.addView(text(
-            "For first setup, the Windows PC must run the SuperScreen host. Enter the six-digit pairing code shown in its terminal. Subsequent sessions remember the connection address.",
+            "The Windows host must already be installed and running. It will ask you for a six-digit pairing code on first use. USB tethering is not the proprietary SuperDisplay accessory connection.",
             13f, muted
-        ).apply { setPadding(0, dp(30), 0, 0) })
-        root.addView(text(
-            "EXPERIMENTAL PREVIEW / Unencrypted display. Private hotspot only.",
-            12f, Color.rgb(248, 151, 165), true
         ).apply { setPadding(0, dp(28), 0, 0) })
+        root.addView(text(
+            "PREVIEW / Unencrypted local transport. Use only your private USB link or protected hotspot.",
+            12f, Color.rgb(248, 151, 165), true
+        ).apply { setPadding(0, dp(25), 0, 0) })
     }
 
     private fun validPrivateIPv4(s: String): Boolean {
-        if (!s.matches(Regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}$"))) return false
+        if (!s.matches(Regex("^([0-9]{1,3}\\\\.){3}[0-9]{1,3}$"))) return false
         val values = s.split('.').mapNotNull { it.toIntOrNull() }
         if (values.size != 4 || values.any { it > 255 || it < 0 }) return false
         return values[0] == 10 ||
@@ -131,16 +181,23 @@ class MainActivity : Activity() {
     }
 
     private fun showViewer(host: String) {
+        discovering = false
+        discoveryGeneration++
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val outer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(backdropColor)
         }
         val header = LinearLayout(this).apply {
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(10), 0, dp(10), 0)
+            setPadding(dp(8), dp(6), dp(8), dp(6))
         }
-        addButton(header, "← Change PC", false) { showHome() }
-        outer.addView(header, LinearLayout.LayoutParams(-1, dp(63)))
+        header.addView(button("← Change PC", false) { showHome() },
+            LinearLayout.LayoutParams(0, dp(48), 1f))
+        header.addView(button("Full screen", false) { immersive(true) },
+            LinearLayout.LayoutParams(0, dp(48), 1f).apply { leftMargin = dp(8) })
+        outer.addView(header, LinearLayout.LayoutParams(-1, dp(62)))
+        viewer?.destroy()
         val web = WebView(this).apply {
             setBackgroundColor(backdropColor)
             settings.javaScriptEnabled = true
@@ -168,6 +225,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        discoveryGeneration++
         viewer?.destroy()
         viewer = null
         super.onDestroy()
