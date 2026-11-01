@@ -89,6 +89,7 @@ class MainActivity : Activity() {
 
     private fun showHome(message: String? = null) {
         discoveryGeneration++ // Discard callbacks from any prior discovery screen.
+        discovering = false
         immersive(false)
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         viewer?.destroy()
@@ -100,7 +101,7 @@ class MainActivity : Activity() {
         }
         setContentView(ScrollView(this).apply { addView(root) })
         root.addView(text("▣   SUPER/SCREEN", 15f, accent, true))
-        root.addView(text("Your Windows.\\nYour phone.", 33f, inkColor, true).apply {
+        root.addView(text("Your Windows.\nYour phone.", 33f, inkColor, true).apply {
             setPadding(0, dp(35), 0, dp(20))
         })
         root.addView(text(
@@ -172,7 +173,7 @@ class MainActivity : Activity() {
     }
 
     private fun validPrivateIPv4(s: String): Boolean {
-        if (!s.matches(Regex("^([0-9]{1,3}\\\\.){3}[0-9]{1,3}$"))) return false
+        if (!s.matches(Regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}$"))) return false
         val values = s.split('.').mapNotNull { it.toIntOrNull() }
         if (values.size != 4 || values.any { it > 255 || it < 0 }) return false
         return values[0] == 10 ||
